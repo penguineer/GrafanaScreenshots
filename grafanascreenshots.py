@@ -94,6 +94,13 @@ def get_dashboard_url():
 
     return new_url
 
+def setup_chrome_profile_path():
+    path = os.getenv('CHROME_PROFILE', '/app/chrome-profile')
+    try:
+        os.makedirs(path, exist_ok=True)
+        return path
+    except OSError as e:
+        raise OSError(f"Failed to create CHROME_PROFILE directory: {e}")
 
 # Register signal handler for SIGINT and SIGTERM
 signal.signal(signal.SIGINT, signal_handler)
@@ -118,6 +125,9 @@ chrome_options.add_argument("--headless")
 chrome_options.add_argument("--no-sandbox")
 chrome_options.add_argument("--kiosk")
 
+# Set the user profile directory for Chrome
+chrome_profile = setup_chrome_profile_path()
+chrome_options.add_argument(f"--user-data-dir={chrome_profile}")
 
 capture_screenshot()
 # Capture a screenshot every 30 seconds
