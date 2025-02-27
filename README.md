@@ -14,6 +14,7 @@ Configuration is done using environment variables:
 * `GRAFANA_PASSWORD`: The password to log in to the Grafana dashboard.
 * `WINDOW_WIDTH`: The width of the browser window for capturing screenshots. Default is '1280'.
 * `WINDOW_HEIGHT`: The height of the browser window for capturing screenshots. Default is '1024'.
+* `CHROME_PROFILE`: Path to a Chrome profile directory to use for the browser. Default is `/app/chrome-profile`.
 
 These environment variables can be set in your system's environment variable settings, or in the script that calls your Python script. For local development, you can also set these variables in a `.env` file and use a tool like `python-dotenv` to load them.
 
