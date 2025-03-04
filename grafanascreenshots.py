@@ -137,4 +137,7 @@ schedule.every(30).seconds.do(capture_screenshot)
 while schedule.get_jobs():
     schedule.run_pending()
     time.sleep(1)
+
+client.disconnect()
+
 print("All jobs have been completed. Exiting...")
