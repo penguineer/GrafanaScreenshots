@@ -78,9 +78,7 @@ def get_dashboard_url():
     # Parse the URL into components
     url_parts = urlparse(url)
 
-    # Append the "autofitpanels" query parameter
     query = parse_qs(url_parts.query)
-    query.update({"kiosk": ["tv"]})
 
     # Construct the new URL
     new_url_parts = ParseResult(
@@ -93,7 +91,8 @@ def get_dashboard_url():
     )
     new_url = urlunparse(new_url_parts)
 
-    new_url = str(new_url) + "&autofitpanels"
+    # Append the "autofitpanels" and "kiosk" query parameter
+    new_url = str(new_url) + "&autofitpanels&kiosk"
 
     return new_url
 
@@ -111,7 +110,10 @@ signal.signal(signal.SIGTERM, signal_handler)
 
 broker_url = check_env_var('MQTT_BROKER_URL')
 mqtt_topic = check_env_var('MQTT_TOPIC')
+
 dashboard_url = get_dashboard_url()
+print(f"Dashboard URL: {dashboard_url}")
+
 username = check_env_var('GRAFANA_USERNAME')
 password = check_env_var('GRAFANA_PASSWORD')
 
