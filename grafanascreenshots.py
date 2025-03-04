@@ -1,18 +1,19 @@
 import os
-import paho.mqtt.client as mqtt
-from selenium import webdriver
-from selenium.common import TimeoutException
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.common.by import By
-from selenium.webdriver.chrome.options import Options
-from webdriver_manager.chrome import ChromeDriverManager
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as ec
-import schedule
 import signal
 import sys
-from urllib.parse import urlparse, urlencode, urlunparse, ParseResult, parse_qs
 import time
+from urllib.parse import urlparse, urlencode, urlunparse, ParseResult, parse_qs
+
+import paho.mqtt.client as mqtt
+import schedule
+from selenium import webdriver
+from selenium.common import TimeoutException
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as ec
+from selenium.webdriver.support.ui import WebDriverWait
+from webdriver_manager.chrome import ChromeDriverManager
 
 
 def check_env_var(var_name):
@@ -49,22 +50,24 @@ def capture_screenshot():
         WebDriverWait(driver, timeout=5).until(ec.presence_of_element_located(selector_r0))
         WebDriverWait(driver, timeout=1).until(ec.presence_of_element_located(selector_r1))
         WebDriverWait(driver, timeout=1).until(ec.presence_of_element_located(selector_submit))
+
+        # Try to log in if the login form is present
+        print("Logging in...")
+        driver.find_element(*selector_r0).send_keys(username)
+        driver.find_element(*selector_r1).send_keys(password)
+        driver.find_element(*selector_submit).click()
+
+        # Wait for the dashboard to load
+        time.sleep(5)
     except TimeoutException:
-        print("Timed out waiting for page to load")
-        driver.quit()
-        return
+        print("Timeout loading login form, assuming that we are already logged in")
 
-    # If your Grafana dashboard requires login
-    driver.find_element(*selector_r0).send_keys(username)
-    driver.find_element(*selector_r1).send_keys(password)
-    driver.find_element(*selector_submit).click()
-
-    # Wait for navigation and capture screenshot
-    time.sleep(5)
+    # Capture screenshot
     screenshot_data = driver.get_screenshot_as_png()
 
     # Publish screenshot data to MQTT
     client.publish(mqtt_topic, screenshot_data)
+    print("Screenshot published to MQTT")
 
     driver.quit()
 
