@@ -133,7 +133,11 @@ capture_screenshot()
 # Capture a screenshot every 30 seconds
 schedule.every(30).seconds.do(capture_screenshot)
 
-
-while True:
+# Schedule is cleared when signal is received
+while schedule.get_jobs():
     schedule.run_pending()
     time.sleep(1)
+
+client.disconnect()
+
+print("All jobs have been completed. Exiting...")
